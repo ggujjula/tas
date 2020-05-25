@@ -1,0 +1,66 @@
+
+* TAS flow w/ Smart NIC
+** Spoofed POSIX networking call redirects to server
+** Server communicates with Smart NIC over PCI bus
+** Smart NIC performs networking with device registers mapped in userspace
+* Possible ways to port to a heterogenous x86 Host / ARMv8 SmartNIC machine
+** TAS/Socket library stays on host, migrate server entirely to SmartNIC
+   1. Migrate server to the SmartNIC, and update it to make its user threads poll for RDMA
+      interrupts.
+      1. Update the server to use architecture-specific code if needed (it seems that SPDK
+	 carries most of the weight).
+
+	 [[https://spdk.io/doc/nvme_8h.html#ac37484cc5d14777e4ae1fde031d0edf2][spdk_transport_id_parse]]
+	 [[https://spdk.io/doc/nvme_8h.html#ac31bc692c6b3a84e2355eb63a8b01cfc][spdk_nvme_ctrlr_get_default_ctrlr_opts]]
+	 [[https://spdk.io/doc/nvme_8h.html#ae26375a74c2c935ec32f0c41a7ed93df][spdk_nvme_connect]]
+
+         #+BEGIN_SRC C
+	   static int new_thread(struct spdk_thread *thr)
+	   {
+    
+	   }
+
+	   static bool configure_opts(void *ctx, const struct spdk_nvme_transport_id *trid,
+				      struct spdk_nvme_ctrlr_opts *opts)
+	   {
+    
+	       return true;
+	   }
+
+	   static void spawn_thread(void *__ignore, const struct spdk_nvme_transport_id *trid,
+				    struct spdk_nvme_ctrlr *ctrlr, const struct spdk_nvme_ctrlr_opts *opts)
+	   {
+	       // Spawn DPDK thread which performs the rest of the initialization and begins
+	       // blocking for RDMA
+	       // ...
+    
+	   }
+
+	   int main(int argc, char *argv[])
+	   {
+	       spdk_thread_lib_init(&new_thread, sysconf(_SC_PAGESIZE));
+    
+	       struct spdk_nvme_transport_id trid;
+    
+	       /* For the sake of clarity let's use the setup we have on the bull2 machine. In the
+		  future, we can offload this to a configuration file. */
+	       if (spdk_transport_id_parse(&trid, "trtype=RDMA adrfam=IPv4 traddr=192.168.100.2")) {
+		   perror("spdk_transport_id_parse: ");
+		   exit(EXIT_FAILURE);
+	       }
+    
+	       if (spdk_nvme_probe(&trid, &opts, &is_rdma, &spawn_thread, &trid)) {
+		   perror("spdk_nvme_probe: ");
+		   exit(EXIT_FAILURE);
+	       }
+	   }
+	 #+END_SRC
+      2. Everything else should remain the same.
+   2. Create library to send packets over the PCI bus through RDMA to the server sitting on the
+      SmartNIC using SPDK. 
+* Questions for Dr. Peter and Jongyul
+** Is SPDK already on the SmartNIC and Fedora Host? (Jongyul)
+** If not, would we be able to incorporate it into TAS?
+** Since the DMA interrupt will be our event, could we theoretically
+   add more user threads per core since SPDK will be handling the
+   devices in userland?
