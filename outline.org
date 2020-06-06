@@ -7,16 +7,30 @@
    1. Migrate most of the fast path to the SmartNIC, and update it to make its user threads poll for RDMA
       interrupts.
       1. Or perhaps they can poll for more generic "events", like with the regular server. This could allow interrupts
-	 to dispatch small threads to add requests to a queue and quietly exit. This could allow for less bottlenecking
-	 over inter-machine communication.
+ 	 to dispatch small threads to add requests to a queue and quietly exit. This could allow for less bottlenecking
+ 	 over inter-machine communication.
    2. Keep multiple user threads running on each core on the host server, so we can still have high throughput for requests.
    3. Each host thread will write requests to the NIC using DMA, triggering an interrupt on the other end.
    4. On the SmartNIC, the DMA interrupt handler will atomically add requests to a blocking queue and exit.
    5. For each core on the SmartNIC, the thread will attempt to poll from the queue, and block accordingly if no request is
       present for it to parse.
 * Questions for Dr. Peter and Jongyul
-** What is the extent of the libraries that we can install? The DMA interface for DPDK doesn't seem very feature-rich.
+** What is the extent of the libraries that we can install? The DMA interface for DPDK doesn't seem 
+   very feature-rich.
+   *Use libibverbs or RDMA-Core*
 ** It seems that the DMA controller is disabled on the SmartNIC, would we be able to enable it using 
    =echo "1" > /sys/bus/pci/.../enable=? What is the state of drivers for the DMA controller?
+   *Use an RDMA command (called a verb), that you submit over the PCI bus as an RDMA verb*
+   *Possible libraries include libibverb, RDMA-core*
+** How multicore friendly would it be to allow for the DMA Interrupt handler to manage the queue? Would instead 
+   having it quickly spawn user threads to make individual mutations on the request queue?
+   *Chances are that it will just work without anything special outside of regular porting*
+   *When we actually receive packets, then we use RDMA*
+   *Outside of that, we just busy wait on some address that we use RDMA on*
+** How could we map core threads on the host to core threads on the smartNIC? Would we simply create no
+   association and rely on the DMA interrupts to insert requests into a queue managers?
+   *Mappings should just be one-to-one*
 ** On the topic of the previous two questions, would RDMA-Core be a servicable means of using the DMA
    controller? It has been referenced in the Mellanox forums for usage with DPDK and DMA.
+   
+   *We will figure this out*
