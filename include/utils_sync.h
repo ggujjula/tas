@@ -43,6 +43,7 @@ static inline void util_spin_lock(volatile uint32_t *sl)
 {
   uint32_t lock_val = 1;
 
+#if TAS_TARGET_ARCH==x86_64
   asm volatile (
       "1:\n"
       "xchg %[locked], %[lv]\n"
@@ -57,28 +58,36 @@ static inline void util_spin_lock(volatile uint32_t *sl)
       : [locked] "=m" (*sl), [lv] "=q" (lock_val)
       : "[lv]" (lock_val)
       : "memory");
+#else
+#endif
 }
 
 static inline void util_spin_unlock(volatile uint32_t *sl)
 {
   uint32_t unlock_val = 0;
 
+#if TAS_TARGET_ARCH==x86_64
   asm volatile (
       "xchg %[locked], %[ulv]\n"
       : [locked] "=m" (*sl), [ulv] "=q" (unlock_val)
       : "[ulv]" (unlock_val)
       : "memory");
+#else
+#endif
 }
 
 static inline int util_spin_trylock(volatile uint32_t *sl)
 {
   uint32_t lockval = 1;
 
+#if TAS_TARGET_ARCH==x86_64
   asm volatile (
       "xchg %[locked], %[lockval]"
       : [locked] "=m" (*sl), [lockval] "=q" (lockval)
       : "[lockval]" (lockval)
       : "memory");
+#else
+#endif
 
   return lockval == 0;
 }

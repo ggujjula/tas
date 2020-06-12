@@ -30,7 +30,10 @@
 
 #define MIN(a,b) ((b) < (a) ? (b) : (a))
 #define MAX(a,b) ((b) > (a) ? (b) : (a))
-#define MEM_BARRIER() __asm__ volatile("" ::: "memory")
+#if TAS_TARGET_ARCH==x86_64
+  #define MEM_BARRIER() __asm__ volatile("" ::: "memory")
+#else
+#endif
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 #define LIKELY(x) __builtin_expect((x),1)
 #define UNLIKELY(x) __builtin_expect((x),0)
@@ -76,13 +79,19 @@ static inline beui64_t t_beui64(uint64_t x)
 static inline uint64_t util_rdtsc(void)
 {
     uint32_t eax, edx;
+#if TAS_TARGET_ARCH==x86_64
     asm volatile ("rdtsc" : "=a" (eax), "=d" (edx));
     return ((uint64_t) edx << 32) | eax;
+#else
+#endif
 }
 
 static inline void util_prefetch0(const volatile void *p)
 {
+#if TAS_TARGET_ARCH==x86_64
   asm volatile ("prefetcht0 %[p]" : : [p] "m" (*(const volatile char *)p));
+#else
+#endif
 }
 
 

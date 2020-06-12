@@ -5,7 +5,9 @@
 
 CPPFLAGS += -Iinclude/
 CPPFLAGS += $(EXTRA_CPPFLAGS)
+TAS_TARGET_ARCH = $(shell uname -m)
 CFLAGS += -std=gnu99 -O3 -g -Wall -Werror -march=native -fno-omit-frame-pointer
+CFLAGS += -D TAS_TARGET_ARCH=$(TAS_TARGET_ARCH)
 CFLAGS += $(EXTRA_CFLAGS)
 CFLAGS_SHARED += $(CFLAGS) -fPIC
 LDFLAGS += -pthread -g

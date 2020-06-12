@@ -252,6 +252,7 @@ static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
   p7 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
 
+#if TAS_TARGET_ARCH==x86_64
   asm volatile(
       "prefetcht0 32(%0);"
       "prefetcht0 32(%1);"
@@ -282,6 +283,8 @@ static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
       : "r" (p0), "r" (p1), "r" (p2), "r" (p3),
         "r" (p4), "r" (p5), "r" (p6), "r" (p7), "r" (ts)
       : "memory");
+#else
+#endif
 
 }
 
@@ -299,6 +302,7 @@ static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
   p3 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
 
+#if TAS_TARGET_ARCH==x86_64
   asm volatile(
       "prefetcht0 32(%0);"
       "prefetcht0 32(%1);"
@@ -315,6 +319,9 @@ static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
       :
       : "r" (p0), "r" (p1), "r" (p2), "r" (p3), "r" (ts)
       : "memory");
+#else
+#endif
+
 }
 
 
