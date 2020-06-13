@@ -1,0 +1,23 @@
+* Architecture-specific code
+  | File and line numbers      | Definitions       | Architecture conflicts resolved | Code functioning as intended | Finished |
+  | lib/tas/init.c:255-284     | [[../lib/tas/init.c::255][fetch_8ts]]         | no                              | no                           | no       |
+  | lib/tas/init.c:302-317     | [[../lib/tas/init.c::302][fetch_4ts]]         | no                              | no                           | no       |
+  | include/utils.h:38         | [[../include/utils.h::38][memory barrier]]    | no                              | no                           | no       |
+  | include/utils.h:90         | [[../include/utils.h::90][util_rdtsc]]        | no                              | no                           | no       |
+  | include/utils.h:100        | [[../include/utils.h::100  ][util_prefetch0]]    | no                              | no                           | no       |
+  | include/utils_sync.h:46-59 | [[../include/utils_sync.h::46][util_spin_lock]]    | no                              | no                           | no       |
+  | include/utils_sync.h:66-70 | [[../include/utils_sync.h::66][util_spin_unlock]]  | no                              | no                           | no       |
+  | include/utils_sync.h:77-81 | [[../include/utils_sync.h][util_spin_trylock]] | no                              | no                           | no       |
+* Replacement candidates
+** I opted to only write descriptions of functions whose names weren't immediately indicative of their functionality.
+** [[../lib/tas/init.c::255][fetch_8ts]]
+*** Vectorized read of a byte from the next 8 receive queues starting with =q= for the given =flextcp_context=.
+** [[../lib/tas/init.c::302][fetch_4ts]] 
+*** Same as =fetch_8ts=, but fetches 4 bytes as opposed to 8.
+** [[../include/utils.h::90][util_rdtsc]]
+*** Read from the timestamp counter.
+** [[../include/utils.h::100  ][util_prefetch0]]
+*** Prefetch memory into the cache.
+* Notes
+** All stub replacement sections are marked with the comment =// IMPLEMENT STUB=, indented to the context of the function.
+** The macros =__amd64__= and =__aarch64__= are defined by GCC for x86-64 and AArch64, respectively.

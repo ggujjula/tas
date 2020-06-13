@@ -14,6 +14,10 @@
    4. On the SmartNIC, the DMA interrupt handler will atomically add requests to a blocking queue and exit.
    5. For each core on the SmartNIC, the thread will attempt to poll from the queue, and block accordingly if no request is
       present for it to parse.
+* Architecture macros
+** Given we're compiling using GCC, it'll be appropriate to make use of these symbols:
+*** For ARMv8/AArch64, use =__aarch64__=
+*** For x86-64, use =__x86_64__= or =__amd64__=
 * Questions for Dr. Peter and Jongyul
 ** What is the extent of the libraries that we can install? The DMA interface for DPDK doesn't seem 
    very feature-rich.

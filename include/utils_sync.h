@@ -41,8 +41,8 @@
 
 static inline void util_spin_lock(volatile uint32_t *sl)
 {
+#ifdef __amd64__
   uint32_t lock_val = 1;
-
   asm volatile (
       "1:\n"
       "xchg %[locked], %[lv]\n"
@@ -57,10 +57,14 @@ static inline void util_spin_lock(volatile uint32_t *sl)
       : [locked] "=m" (*sl), [lv] "=q" (lock_val)
       : "[lv]" (lock_val)
       : "memory");
+#elif defined(__aarch64__)
+  // IMPLEMENT STUB
+#endif  
 }
 
 static inline void util_spin_unlock(volatile uint32_t *sl)
 {
+#ifdef __amd64__
   uint32_t unlock_val = 0;
 
   asm volatile (
@@ -68,10 +72,14 @@ static inline void util_spin_unlock(volatile uint32_t *sl)
       : [locked] "=m" (*sl), [ulv] "=q" (unlock_val)
       : "[ulv]" (unlock_val)
       : "memory");
+#elif defined(__aarch64__)
+  // IMPLEMENT STUB
+#endif  
 }
 
 static inline int util_spin_trylock(volatile uint32_t *sl)
 {
+#ifdef __amd64__   
   uint32_t lockval = 1;
 
   asm volatile (
@@ -81,5 +89,7 @@ static inline int util_spin_trylock(volatile uint32_t *sl)
       : "memory");
 
   return lockval == 0;
-}
-#endif /* ndef UTILS_SYNC_H_ */
+#elif defined(__aarch64__)
+  // IMPLEMENT STUB
+  return 0;
+#endif 

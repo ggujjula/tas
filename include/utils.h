@@ -30,7 +30,14 @@
 
 #define MIN(a,b) ((b) < (a) ? (b) : (a))
 #define MAX(a,b) ((b) > (a) ? (b) : (a))
+
+#ifdef __amd64__
 #define MEM_BARRIER() __asm__ volatile("" ::: "memory")
+#elif defined(__aarch64__)
+// IMPLEMENT STUB
+#define MEM_BARRIER()
+#endif
+
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 #define LIKELY(x) __builtin_expect((x),1)
 #define UNLIKELY(x) __builtin_expect((x),0)
@@ -75,14 +82,23 @@ static inline beui64_t t_beui64(uint64_t x)
 
 static inline uint64_t util_rdtsc(void)
 {
+#ifdef __amd64__
     uint32_t eax, edx;
     asm volatile ("rdtsc" : "=a" (eax), "=d" (edx));
     return ((uint64_t) edx << 32) | eax;
+#elif defined(__aarch64__)
+    // IMPLEMENT STUB
+    return 0;
+#endif
 }
 
 static inline void util_prefetch0(const volatile void *p)
 {
+#ifdef __amd64__    
   asm volatile ("prefetcht0 %[p]" : : [p] "m" (*(const volatile char *)p));
+#elif defined(__arch64__)
+    // IMPLEMENT STUB
+#endif
 }
 
 
