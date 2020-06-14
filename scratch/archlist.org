@@ -1,13 +1,14 @@
 * Architecture-specific code
-  | File and line numbers      | Definitions       | Architecture conflicts resolved | Code functioning as intended | Finished |
-  | lib/tas/init.c:255-284     | [[../lib/tas/init.c::255][fetch_8ts]]         | no                              | no                           | no       |
-  | lib/tas/init.c:302-317     | [[../lib/tas/init.c::302][fetch_4ts]]         | no                              | no                           | no       |
-  | include/utils.h:38         | [[../include/utils.h::38][memory barrier]]    | no                              | no                           | no       |
-  | include/utils.h:90         | [[../include/utils.h::90][util_rdtsc]]        | no                              | no                           | no       |
-  | include/utils.h:100        | [[../include/utils.h::100  ][util_prefetch0]]    | no                              | no                           | no       |
-  | include/utils_sync.h:46-59 | [[../include/utils_sync.h::46][util_spin_lock]]    | no                              | no                           | no       |
-  | include/utils_sync.h:66-70 | [[../include/utils_sync.h::66][util_spin_unlock]]  | no                              | no                           | no       |
-  | include/utils_sync.h:77-81 | [[../include/utils_sync.h][util_spin_trylock]] | no                              | no                           | no       |
+  | File and line numbers           | Definitions       | Architecture conflicts resolved | Code functioning as intended | Finished |
+  | lib/tas/init.c:255-284          | [[../lib/tas/init.c::255][fetch_8ts]]         | yes                             | no                           | no       |
+  | lib/tas/init.c:302-317          | [[../lib/tas/init.c::302][fetch_4ts]]         | yes                             | no                           | no       |
+  | include/utils.h:38              | [[../include/utils.h::38][memory barrier]]    | yes                             | no                           | no       |
+  | include/utils.h:90              | [[../include/utils.h::90][util_rdtsc]]        | yes                             | no                           | no       |
+  | include/utils.h:100             | [[../include/utils.h::100  ][util_prefetch0]]    | yes                             | no                           | no       |
+  | include/utils_sync.h:46-59      | [[../include/utils_sync.h::46][util_spin_lock]]    | yes                             | no                           | no       |
+  | include/utils_sync.h:66-70      | [[../include/utils_sync.h::66][util_spin_unlock]]  | yes                             | no                           | no       |
+  | include/utils_sync.h:77-81      | [[../include/utils_sync.h][util_spin_trylock]] | yes                             | no                           | no       |
+  | lib/sockets/interpose.c:630-664 | [[../lib/sockets/interpose.c::526][syscall]]           | no                              | no                           | no       |
 * Replacement candidates
 ** I opted to only write descriptions of functions whose names weren't immediately indicative of their functionality.
 ** [[../lib/tas/init.c::255][fetch_8ts]]
@@ -18,6 +19,15 @@
 *** Read from the timestamp counter.
 ** [[../include/utils.h::100  ][util_prefetch0]]
 *** Prefetch memory into the cache.
+** [[../lib/sockets/interpose.c::526][syscall]]
+*** It seems that some system call numbers may be exposed in different headers, or not at all for our Linux kernel version.
+*** The following symbols are listed as SYMBOL / ALTERNATIVE (provided by gcc). 
+**** SYS_select / SYS_pselect6
+**** SYS_epoll_create / SYS_epoll_create1
+**** SYS_epoll_wait / SYS_epoll_pwait
+**** SYS_poll / SYS_ppoll
+**** SYS_dup2 / SYS_dup
+*** It seems the headers we want are exposed under /usr/include/aarch64-linux-gnu/bits/syscall.h
 * Notes
 ** All stub replacement sections are marked with the comment =// IMPLEMENT STUB=, indented to the context of the function.
 ** The macros =__amd64__= and =__aarch64__= are defined by GCC for x86-64 and AArch64, respectively.
