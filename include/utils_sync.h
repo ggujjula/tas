@@ -59,19 +59,22 @@ static inline void util_spin_lock(volatile uint32_t *sl)
       : "[lv]" (lock_val)
       : "memory");
 #else
+  uint32_t exchange;
+  //TODO: Verify cache coherency / instr order works
   asm volatile (
       "1:\n"
-      "xchg %[locked], %[lv]\n"
-      "test %[lv], %[lv]\n"
-      "jz 3f\n"
+      "ldxr %[xchg], [%[locked]]\n"
+      "stxr %[lv], [%[locked]]\n"
+      "tst %[xchg], %[xchg]\n"
+      "bz 3f\n"
       "2:\n"
-      "pause\n"
-      "cmpl $0, %[locked]\n"
-      "jnz 2b\n"
-      "jmp 1b\n"
+      "yield\n"
+      "cmp $0, %[locked]\n"
+      "bnz 2b\n"
+      "b 1b\n"
       "3:\n"
-      : [locked] "=m" (*sl), [lv] "=q" (lock_val)
-      : "[lv]" (lock_val)
+      : [locked] "=m" (*sl), [lv] "=r" (lock_val), [xchg] "=r" (exchange)
+      : "[lv]" (lock_val), "[xchg]" (exchange)
       : "memory");
 #endif
 }
