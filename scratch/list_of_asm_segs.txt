@@ -1,6 +1,8 @@
 lib/tas/init.c::fetch_8ts 255 - 284
 lib/tas/init.c::fetch_4ts 302 - 317
 tas/include/utils.h 33
+	This memory barrier targets compiler reordering, and is not hardware
+	specific. There should be no problem with porting the definition to ARM.
 tas/include/utils.h::util_rdtsc 79
 tas/include/utils.h::util_prefetch0 85
 tas/include/utils_sync.h::util_spin_lock 46 - 59
