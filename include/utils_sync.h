@@ -92,4 +92,7 @@ static inline int util_spin_trylock(volatile uint32_t *sl)
 #elif defined(__aarch64__)
   // IMPLEMENT STUB
   return 0;
-#endif 
+#endif
+}
+
+#endif
