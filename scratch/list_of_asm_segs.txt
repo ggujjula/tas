@@ -1,10 +1,26 @@
 lib/tas/init.c::fetch_8ts 255 - 284
 lib/tas/init.c::fetch_4ts 302 - 317
+
 tas/include/utils.h 33
 	This memory barrier targets compiler reordering, and is not hardware
-	specific. There should be no problem with porting the definition to ARM.
+	specific. There should be no problem with porting this segment to ARM.
+
 tas/include/utils.h::util_rdtsc 79
+	This asm segment performs the "rdtsc" instruction, which reads the x86
+	specific Time Stamp Counter. There is no exact equivalent for this
+	register in ARMv8, but there is a generic timer that increments at a
+	constant given frequency. Apart from this code, any code in the codebase
+	that uses rdtsc should be inspected to ensure that it is still valid.
 tas/include/utils.h::util_prefetch0 85
+	This asm segment performs the "prefetcht0" instruction, which fetches the
+	cache line that contains *p (I assume) and places into all cache levels.
+	Since this is only a temporal hint and is implementation dependent, this
+	code is most likely not critical to the functionality of TAS. Planning to
+	replace with a PRFM instruction(s).
+
 tas/include/utils_sync.h::util_spin_lock 46 - 59
 tas/include/utils_sync.h::util_spin_unlock 66 - 70
 tas/include/utils_sync.h::util_spin_trylock 77 - 81
+	These asm segments implement a lock mechanism that was originally from
+	the DPDK codebase. They are extended asm instructions. For more about
+	extended asm, see https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html	

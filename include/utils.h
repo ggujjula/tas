@@ -76,11 +76,16 @@ static inline beui64_t t_beui64(uint64_t x)
 
 static inline uint64_t util_rdtsc(void)
 {
-    uint32_t eax, edx;
 #if TAS_TARGET_ARCH==x86_64
+    uint32_t eax, edx;
     asm volatile ("rdtsc" : "=a" (eax), "=d" (edx));
     return ((uint64_t) edx << 32) | eax;
 #else
+    uint64_t rx;
+	//TODO: Find out if read ordering is important,
+	//add an isb if needed
+    asm volatile ("MRS %0 CNTPCT_EL0" : "=lh" (rx));
+    return rx;
 #endif
 }
 
@@ -89,6 +94,10 @@ static inline void util_prefetch0(const volatile void *p)
 #if TAS_TARGET_ARCH==x86_64
   asm volatile ("prefetcht0 %[p]" : : [p] "m" (*(const volatile char *)p));
 #else
+  asm volatile ("PRFM PLDL1KEEP %[p]\n"
+		"PRFM PSTL1KEEP %[p]\n"
+		:
+		: [p] "m" (*(const volatile char *)p));
 #endif
 }
 
