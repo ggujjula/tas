@@ -90,6 +90,13 @@ static inline void util_spin_unlock(volatile uint32_t *sl)
       : "[ulv]" (unlock_val)
       : "memory");
 #else
+  uint32_t exchange;
+  asm volatile (
+      "ldxr %[xchg], [%[locked]]\n"
+      "stxr %[ulv], [%[locked]]\n"
+      : [locked] "=m" (*sl), [ulv] "=r" (unlock_val), [xchg] "=r" (exchange)
+      : "[ulv]" (unlock_val)
+      : "memory");
 #endif
 }
 
@@ -103,9 +110,16 @@ static inline int util_spin_trylock(volatile uint32_t *sl)
       : [locked] "=m" (*sl), [lockval] "=q" (lockval)
       : "[lockval]" (lockval)
       : "memory");
-#else
-#endif
-
   return lockval == 0;
+#else
+  uint32_t exchange;
+  asm volatile (
+      "ldxr %[xchg], [%[locked]]\n"
+      "stxr %[lv], [%[locked]]\n"
+      : [locked] "=m" (*sl), [lv] "=r" (lockval), [xchg] "=r" (exchange)
+      : "[lv]" (lockval)
+      : "memory");
+  return exchange == 0;
+#endif
 }
 #endif /* ndef UTILS_SYNC_H_ */

@@ -31,7 +31,6 @@
 #define MIN(a,b) ((b) < (a) ? (b) : (a))
 #define MAX(a,b) ((b) > (a) ? (b) : (a))
 #define MEM_BARRIER() __asm__ volatile("" ::: "memory")
-#endif
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 #define LIKELY(x) __builtin_expect((x),1)
 #define UNLIKELY(x) __builtin_expect((x),0)
