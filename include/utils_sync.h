@@ -59,21 +59,24 @@ static inline void util_spin_lock(volatile uint32_t *sl)
       : "[lv]" (lock_val)
       : "memory");
 #elif defined(__aarch64__)
-  uint32_t exchange;
+  uint32_t exchange = 0;
+  uint32_t status = 0;
   //TODO: Verify cache coherency / instr order works
   asm volatile (
       "1:\n"
-      "ldxr %[xchg], [%[locked]]\n"
-      "stxr %[lv], [%[locked]]\n"
+      "ldxr %[xchg], %[locked]\n"
+      "stxr %w[stat], %[lv], %[locked]\n"
       "tst %[xchg], %[xchg]\n"
-      "bz 3f\n"
+      "beq 3f\n"
       "2:\n"
       "yield\n"
-      "cmp $0, %[locked]\n"
-      "bnz 2b\n"
+      "ldr %[xchg], %[locked]\n"
+      "cmp %[xchg], #0\n"
+      "bne 2b\n"
       "b 1b\n"
       "3:\n"
-      : [locked] "=m" (*sl), [lv] "=r" (lock_val), [xchg] "=r" (exchange)
+      : [locked] "=Q" (*sl), [lv] "=r" (lock_val), [xchg] "=r" (exchange),
+      	[stat] "=r" (status)
       : "[lv]" (lock_val), "[xchg]" (exchange)
       : "memory");
 #endif
@@ -90,11 +93,13 @@ static inline void util_spin_unlock(volatile uint32_t *sl)
       : "[ulv]" (unlock_val)
       : "memory");
 #elif defined(__aarch64__)
-  uint32_t exchange;
+  uint32_t exchange = 1;
+  uint32_t status = 0;
   asm volatile (
-      "ldxr %[xchg], [%[locked]]\n"
-      "stxr %[ulv], [%[locked]]\n"
-      : [locked] "=m" (*sl), [ulv] "=r" (unlock_val), [xchg] "=r" (exchange)
+      "ldxr %[xchg], %[locked]\n"
+      "stxr %w[stat], %[ulv], %[locked]\n"
+      : [locked] "=Q" (*sl), [ulv] "=r" (unlock_val), [xchg] "=r" (exchange),
+      	[stat] "=r" (status)
       : "[ulv]" (unlock_val)
       : "memory");
 #endif
@@ -112,15 +117,18 @@ static inline int util_spin_trylock(volatile uint32_t *sl)
       : "memory");
   return lockval == 0;
 #elif defined(__aarch64__)
-  uint32_t exchange;
+  uint32_t exchange = 1;
+  uint32_t status = 0;
   asm volatile (
-      "ldxr %[xchg], [%[locked]]\n"
-      "stxr %[lv], [%[locked]]\n"
-      : [locked] "=m" (*sl), [lv] "=r" (lockval), [xchg] "=r" (exchange)
+      "ldxr %[xchg], %[locked]\n"
+      "stxr %w[stat], %[lv], %[locked]\n"
+      : [locked] "=Q" (*sl), [lv] "=r" (lockval), [xchg] "=r" (exchange),
+      	[stat] "=r" (status)
       : "[lv]" (lockval)
       : "memory");
   return exchange == 0;
 #endif
+  return 0;
 }
 
 #endif

@@ -90,7 +90,7 @@ static inline uint64_t util_rdtsc(void)
     uint64_t rx;
 	//TODO: Find out if read ordering is important,
 	//add an isb if needed
-    asm volatile ("MRS %0 CNTPCT_EL0" : "=lh" (rx));
+    asm volatile ("MRS %0, CNTPCT_EL0" : "=r" (rx));
     return rx;
 #endif
 }
