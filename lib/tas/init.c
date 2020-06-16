@@ -233,6 +233,7 @@ static int fastpath_poll(struct flextcp_context *ctx, int num,
 static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
     uint16_t q, uint8_t *ts)
 {
+#if TAS_TARGET_ARCH==x86_64
   struct flextcp_pl_arx *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7;
 
   p0 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
@@ -252,7 +253,6 @@ static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
   p7 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
 
-#if TAS_TARGET_ARCH==x86_64
   asm volatile(
       "prefetcht0 32(%0);"
       "prefetcht0 32(%1);"
@@ -291,6 +291,7 @@ static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
 static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
     uint16_t q, uint8_t *ts)
 {
+#if TAS_TARGET_ARCH==x86_64
   struct flextcp_pl_arx *p0, *p1, *p2, *p3;
 
   p0 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
@@ -302,7 +303,6 @@ static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
   p3 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
 
-#if TAS_TARGET_ARCH==x86_64
   asm volatile(
       "prefetcht0 32(%0);"
       "prefetcht0 32(%1);"
@@ -355,6 +355,7 @@ static int fastpath_poll_vec(struct flextcp_context *ctx, int num,
       uint16_t qs = ctx->num_queues;
       q = ctx->next_queue;
       k = 0;
+#ifdef TAS_TARGET_ARCH==x86_64
       while (qs > 8) {
         fetch_8ts(ctx, qheads, q, types + k);
 
@@ -369,6 +370,7 @@ static int fastpath_poll_vec(struct flextcp_context *ctx, int num,
         k += 4;
         qs -= 4;
       }
+#endif
       while (qs > 0) {
         arx = (volatile struct flextcp_pl_arx *)
           (ctx->queues[q].rxq_base + qheads[q]);
@@ -472,6 +474,8 @@ int flextcp_context_poll(struct flextcp_context *ctx, int num,
   for (k = 0, q = ctx->next_queue; k < ctx->num_queues; k++) {
     util_prefetch0((struct flextcp_pl_arx *) (ctx->queues[q].rxq_base +
         ctx->queues[q].rxq_head));
+    //TODO: If all queues are being prefetched, does calling util_prefetch0
+    //on each queue in order matter? Consider starting q at 0.
     q = (q + 1 < ctx->num_queues ? q + 1 : 0);
   }
 
