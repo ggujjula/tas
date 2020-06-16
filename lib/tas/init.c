@@ -233,7 +233,7 @@ static int fastpath_poll(struct flextcp_context *ctx, int num,
 static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
     uint16_t q, uint8_t *ts)
 {
-#if TAS_TARGET_ARCH==x86_64
+#ifdef __amd64__    
   struct flextcp_pl_arx *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7;
 
   p0 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
@@ -283,15 +283,15 @@ static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
       : "r" (p0), "r" (p1), "r" (p2), "r" (p3),
         "r" (p4), "r" (p5), "r" (p6), "r" (p7), "r" (ts)
       : "memory");
-#else
+#elif defined(__aarch64__)
+  // IMPLEMENT STUB
 #endif
-
 }
 
 static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
     uint16_t q, uint8_t *ts)
 {
-#if TAS_TARGET_ARCH==x86_64
+#ifdef __amd64__    
   struct flextcp_pl_arx *p0, *p1, *p2, *p3;
 
   p0 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
@@ -319,9 +319,9 @@ static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
       :
       : "r" (p0), "r" (p1), "r" (p2), "r" (p3), "r" (ts)
       : "memory");
-#else
+#elif defined(__aarch64__)
+  // IMPLEMENT STUB
 #endif
-
 }
 
 
@@ -355,7 +355,8 @@ static int fastpath_poll_vec(struct flextcp_context *ctx, int num,
       uint16_t qs = ctx->num_queues;
       q = ctx->next_queue;
       k = 0;
-#ifdef TAS_TARGET_ARCH==x86_64
+//TODO: Remove ifdef when ARM code is written
+#ifdef __amd64__
       while (qs > 8) {
         fetch_8ts(ctx, qheads, q, types + k);
 
