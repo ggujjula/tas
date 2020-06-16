@@ -22,13 +22,19 @@ INCDIR ?= $(PREFIX)/include
 ##############################################################################
 # DPDK configuration
 
+# /opt/mellanox/dpdk/include/dpdk/
+
 # Prefix for dpdk
-RTE_SDK ?= /usr/
+ifeq (,$(findstring bluefield,$(shell uname -r)))
+  RTE_SDK ?= /usr/
+  DPDK_CPPFLAGS += -I$(RTE_SDK)/include/x86_64-linux-gnu/dpdk/
+else
+  RTE_SDK ?= /opt/mellanox/dpdk/
+endif
 # mpdts to compile
 DPDK_PMDS ?= ixgbe i40e tap virtio
 
-DPDK_CPPFLAGS += -I$(RTE_SDK)/include -I$(RTE_SDK)/include/dpdk \
-  -I$(RTE_SDK)/include/x86_64-linux-gnu/dpdk/
+DPDK_CPPFLAGS += -I$(RTE_SDK)/include -I$(RTE_SDK)/include/dpdk
 DPDK_LDFLAGS+= -L$(RTE_SDK)/lib/
 DPDK_LDLIBS+= \
   -Wl,--whole-archive \
