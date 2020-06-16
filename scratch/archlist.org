@@ -13,7 +13,7 @@
 ** I opted to only write descriptions of functions whose names weren't immediately indicative of their functionality.
 ** [[../lib/tas/init.c::255][fetch_8ts]]
 *** Vectorized read of a byte from the next 8 receive queues starting with =q= for the given =flextcp_context=.
-** [[../lib/tas/init.c::302][fetch_4ts]] 
+** [[../lib/tas/init.c::302][fetch_4ts]]
 *** Same as =fetch_8ts=, but fetches 4 bytes as opposed to 8.
 ** [[../include/utils.h::90][util_rdtsc]]
 *** Read from the timestamp counter.

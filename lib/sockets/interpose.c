@@ -626,11 +626,12 @@ long syscall(long number, ...)
     case SYS_sendfile:
       return sendfile((int) arg1, (int) arg2, (off_t *) (uintptr_t) arg3,
           (size_t) arg4);
-
+#ifdef SYS_select
     case SYS_select:
       return select((int) arg1, (fd_set *) (uintptr_t) arg2,
           (fd_set *) (uintptr_t) arg3, (fd_set *) (uintptr_t) arg4,
           (struct timeval *) (uintptr_t) arg5);
+#endif
     case SYS_pselect6:
       fprintf(stderr, "tas syscall(): warning our pselect6 does not update "
           "timeout value\n");
@@ -638,22 +639,28 @@ long syscall(long number, ...)
           (fd_set *) (uintptr_t) arg3, (fd_set *) (uintptr_t) arg4,
           (struct timespec *) (uintptr_t) arg5,
           (const sigset_t *) (uintptr_t) arg6);
+#ifdef SYS_epoll_create
     case SYS_epoll_create:
       return epoll_create((int) arg1);
+#endif
     case SYS_epoll_create1:
       return epoll_create1((int) arg1);
     case SYS_epoll_ctl:
       return epoll_ctl((int) arg1, (int) arg2, (int) arg3,
           (struct epoll_event *) (uintptr_t) arg4);
+#ifdef SYS_epoll_wait
     case SYS_epoll_wait:
       return epoll_wait((int) arg1, (struct epoll_event *) (uintptr_t) arg2,
           (int) arg3, (int) arg4);
+#endif
     case SYS_epoll_pwait:
       return epoll_pwait((int) arg1, (struct epoll_event *) (uintptr_t) arg2,
           (int) arg3, (int) arg4, (const sigset_t *) (uintptr_t) arg5);
+#ifdef SYS_poll
     case SYS_poll:
       return poll((struct pollfd *) (uintptr_t) arg1, (nfds_t) arg2,
           (int) arg3);
+#endif
     case SYS_ppoll:
       return ppoll((struct pollfd *) (uintptr_t) arg1, (nfds_t) arg2,
           (const struct timespec *) (uintptr_t) arg3,
@@ -661,8 +668,10 @@ long syscall(long number, ...)
 
     case SYS_dup:
       return dup((int) arg1);
+#ifdef SYS_dup2
     case SYS_dup2:
       return dup2((int) arg1, (int) arg2);
+#endif
     case SYS_dup3:
       return dup3((int) arg1, (int) arg2, (int) arg3);
   }
