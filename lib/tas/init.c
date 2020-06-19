@@ -355,6 +355,8 @@ static int fastpath_poll_vec(struct flextcp_context *ctx, int num,
       uint16_t qs = ctx->num_queues;
       q = ctx->next_queue;
       k = 0;
+//TODO: Remove ifdef when ARM code is written
+#ifdef __amd64__
       while (qs > 8) {
         fetch_8ts(ctx, qheads, q, types + k);
 
@@ -369,6 +371,7 @@ static int fastpath_poll_vec(struct flextcp_context *ctx, int num,
         k += 4;
         qs -= 4;
       }
+#endif
       while (qs > 0) {
         arx = (volatile struct flextcp_pl_arx *)
           (ctx->queues[q].rxq_base + qheads[q]);
@@ -472,6 +475,8 @@ int flextcp_context_poll(struct flextcp_context *ctx, int num,
   for (k = 0, q = ctx->next_queue; k < ctx->num_queues; k++) {
     util_prefetch0((struct flextcp_pl_arx *) (ctx->queues[q].rxq_base +
         ctx->queues[q].rxq_head));
+    //TODO: If all queues are being prefetched, does calling util_prefetch0
+    //on each queue in order matter? Consider starting q at 0.
     q = (q + 1 < ctx->num_queues ? q + 1 : 0);
   }
 

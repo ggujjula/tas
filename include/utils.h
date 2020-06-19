@@ -87,8 +87,11 @@ static inline uint64_t util_rdtsc(void)
     asm volatile ("rdtsc" : "=a" (eax), "=d" (edx));
     return ((uint64_t) edx << 32) | eax;
 #elif defined(__aarch64__)
-    // IMPLEMENT STUB
-    return 0;
+    uint64_t rx;
+	//TODO: Find out if read ordering is important,
+	//add an isb if needed
+    asm volatile ("MRS %0, CNTPCT_EL0" : "=r" (rx));
+    return rx;
 #endif
 }
 
@@ -97,7 +100,10 @@ static inline void util_prefetch0(const volatile void *p)
 #ifdef __amd64__    
   asm volatile ("prefetcht0 %[p]" : : [p] "m" (*(const volatile char *)p));
 #elif defined(__arch64__)
-    // IMPLEMENT STUB
+  asm volatile ("PRFM PLDL1KEEP %[p]\n"
+		"PRFM PSTL1KEEP %[p]\n"
+		:
+		: [p] "m" (*(const volatile char *)p));
 #endif
 }
 

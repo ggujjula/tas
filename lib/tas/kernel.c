@@ -118,6 +118,7 @@ int flextcp_kernel_connect(void)
   kernel_evfd = *pfd;
 
   /* receive fast path fds in batches of 4 */
+  //TODO: Why reinitialize?
   off = 0;
   for (off = 0 ; off < num_fds; ) {
     iov.iov_base = &b;
@@ -138,6 +139,7 @@ int flextcp_kernel_connect(void)
     n = (num_fds - off >= 4 ? 4 : num_fds - off);
 
     /* get kernel fd from welcome message */
+    //TODO: Replace with /* get fastpath fds from subsequent msgs */
     cmsg = CMSG_FIRSTHDR(&msg);
     pfd = (int *) CMSG_DATA(cmsg);
     if (msg.msg_controllen <= 0 || cmsg->cmsg_len != CMSG_LEN(sizeof(int) * n)) {
