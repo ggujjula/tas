@@ -29,7 +29,7 @@ ifeq (,$(findstring bluefield,$(shell uname -r)))
   RTE_SDK ?= /usr/
   DPDK_CPPFLAGS += -I$(RTE_SDK)/include/x86_64-linux-gnu/dpdk/
 else
-  RTE_SDK ?= /opt/mellanox/dpdk/
+  RTE_SDK ?= /root/dpdk-stable-19.11.2/build
 endif
 # mpdts to compile
 DPDK_PMDS ?= ixgbe i40e tap virtio
