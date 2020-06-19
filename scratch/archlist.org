@@ -1,16 +1,16 @@
 * Architecture-specific code
-  | File and line numbers           | Definitions       | Architecture conflicts resolved | Code functioning as intended | Finished |
-  | lib/tas/init.c:255-284          | [[../lib/tas/init.c::255][fetch_8ts]]         | yes                             | no                           | no       |
-  | lib/tas/init.c:302-317          | [[../lib/tas/init.c::302][fetch_4ts]]         | yes                             | no                           | no       |
-  | include/utils.h:38              | [[../include/utils.h::38][memory barrier]]    | yes                             | no                           | no       |
-  | include/utils.h:90              | [[../include/utils.h::90][util_rdtsc]]        | yes                             | no                           | no       |
-  | include/utils.h:100             | [[../include/utils.h::100  ][util_prefetch0]]    | yes                             | no                           | no       |
-  | include/utils_sync.h:46-59      | [[../include/utils_sync.h::46][util_spin_lock]]    | yes                             | no                           | no       |
-  | include/utils_sync.h:66-70      | [[../include/utils_sync.h::66][util_spin_unlock]]  | yes                             | no                           | no       |
-  | include/utils_sync.h:77-81      | [[../include/utils_sync.h][util_spin_trylock]] | yes                             | no                           | no       |
-  | lib/sockets/interpose.c:630-664 | [[../lib/sockets/interpose.c::526][syscall]]           | yes                             | no                           | no       |
-  | tas/slow/tpc.c:676              | [[../tas/slow/tcp.c::676][crc32c_sse42_u32]]  | no                              | no                           | no       |
-  | tas/slow/tpc.c:677              | [[../tas/slow/tcp.c::677][crc32c_sse42_u64]]  | no                              | no                           | no       |
+  | File and line numbers           | Definitions       | Architecture conflicts resolved    | Code functioning as intended | Finished |
+  | lib/tas/init.c:255-284          | [[../lib/tas/init.c::255][fetch_8ts]]         | yes                                | no                           | no       |
+  | lib/tas/init.c:302-317          | [[../lib/tas/init.c::302][fetch_4ts]]         | yes                                | no                           | no       |
+  | include/utils.h:38              | [[../include/utils.h::38][memory barrier]]    | yes                                | no                           | no       |
+  | include/utils.h:90              | [[../include/utils.h::90][util_rdtsc]]        | yes                                | no                           | no       |
+  | include/utils.h:100             | [[../include/utils.h::100  ][util_prefetch0]]    | yes                                | no                           | no       |
+  | include/utils_sync.h:46-59      | [[../include/utils_sync.h::46][util_spin_lock]]    | yes                                | no                           | no       |
+  | include/utils_sync.h:66-70      | [[../include/utils_sync.h::66][util_spin_unlock]]  | yes                                | no                           | no       |
+  | include/utils_sync.h:77-81      | [[../include/utils_sync.h][util_spin_trylock]] | yes                                | no                           | no       |
+  | lib/sockets/interpose.c:630-664 | [[../lib/sockets/interpose.c::526][syscall]]           | yes                                | no                           | no       |
+  | tas/slow/tpc.c:676              | [[../tas/slow/tcp.c::676][crc32c_sse42_u32]]  | need to implement portable version | no                           | no       |
+  | tas/slow/tpc.c:677              | [[../tas/slow/tcp.c::677][crc32c_sse42_u64]]  | see tas/slow/tpc.c:676             | no                           | no       |
 
 * Replacement candidates
 ** I opted to only write descriptions of functions whose names weren't immediately indicative of their functionality.
