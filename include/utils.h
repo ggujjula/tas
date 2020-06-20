@@ -107,6 +107,4 @@ static inline void util_prefetch0(const volatile void *p)
 #endif
 }
 
-
-
 #endif /* ndef UTILS_H_ */

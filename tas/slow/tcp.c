@@ -673,12 +673,8 @@ static inline void conn_free(struct connection *conn)
 static inline uint32_t conn_hash(uint32_t l_ip, uint32_t r_ip, uint16_t l_po,
     uint16_t r_po)
 {
-#ifdef __amd64__
-  return crc32c_sse42_u32(l_po | (((uint32_t) r_po) << 16),
-      crc32c_sse42_u64(l_ip | (((uint64_t) r_ip) << 32), 0));
-#elif defined(__aarch64__)
-  return 0; // See A64 crc32cw and crc32cx
-#endif
+  return rte_hash_crc_4byte(l_po | (((uint32_t) r_po) << 16),
+    rte_hash_crc_8byte(l_ip | (((uint64_t) r_ip) << 32), 0));
 }
 
 static void conn_register(struct connection *conn)
