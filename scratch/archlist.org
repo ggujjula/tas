@@ -11,6 +11,7 @@
   | lib/sockets/interpose.c:630-664 | [[../lib/sockets/interpose.c::526][syscall]]           | yes                                | no                           | no       |
   | tas/slow/tpc.c:676              | [[../tas/slow/tcp.c::676][crc32c_sse42_u32]]  | need to implement portable version | no                           | no       |
   | tas/slow/tpc.c:677              | [[../tas/slow/tcp.c::677][crc32c_sse42_u64]]  | see tas/slow/tpc.c:676             | no                           | no       |
+  | tas/fast/fastflows.c:1078       | [[../tas/fast/fast_flows.c::1078][flow_hash]]         | see tas/slow/tpc.c:676             | no                           | no       |
 
 * Replacement candidates
 ** I opted to only write descriptions of functions whose names weren't immediately indicative of their functionality.
