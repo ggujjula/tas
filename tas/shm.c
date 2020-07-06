@@ -201,11 +201,11 @@ static void *util_create_shmsiszed_huge(const char *name, size_t size,
   snprintf(path, sizeof(path), "%s/%s", FLEXNIC_HUGE_PREFIX, name);
 
   if ((fd = open(path, O_CREAT | O_RDWR, 0666)) == -1) {
-    perror("util_create_shmsiszed: open failed");
+    perror("util_create_shmsiszed_huge: open failed");
     goto error_out;
   }
   if (ftruncate(fd, size) != 0) {
-    perror("util_create_shmsiszed: ftruncate failed");
+    perror("util_create_shmsiszed_huge: ftruncate failed");
     goto error_remove;
   }
 
@@ -213,7 +213,7 @@ static void *util_create_shmsiszed_huge(const char *name, size_t size,
       MAP_SHARED | (addr == NULL ? 0 : MAP_FIXED) | MAP_POPULATE, fd, 0)) ==
       (void *) -1)
   {
-    perror("util_create_shmsiszed: mmap failed");
+    perror("util_create_shmsiszed_huge: mmap failed");
     goto error_remove;
   }
 

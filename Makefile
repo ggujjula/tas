@@ -30,16 +30,17 @@ ifeq (,$(findstring bluefield,$(shell uname -r)))
   DPDK_CPPFLAGS += -I$(RTE_SDK)/include/x86_64-linux-gnu/dpdk/
 else
   RTE_SDK ?= /root/dpdk-stable-19.11.2/build
-  DPDK_LDFLAGS += -lrte_pmd_mlx5
 endif
 # mpdts to compile
-DPDK_PMDS ?= ixgbe i40e tap virtio
+DPDK_PMDS ?= ixgbe i40e tap virtio kni mlx5
 
 DPDK_CPPFLAGS += -I$(RTE_SDK)/include -I$(RTE_SDK)/include/dpdk
 DPDK_LDFLAGS+= -L$(RTE_SDK)/lib/
 DPDK_LDLIBS+= \
   -Wl,--whole-archive \
    $(addprefix -lrte_pmd_,$(DPDK_PMDS)) \
+  -libverbs \
+  -lmlx5 \
   -lrte_eal \
   -lrte_mempool \
   -lrte_mempool_ring \
@@ -60,7 +61,6 @@ DPDK_LDLIBS+= \
   -Wl,--no-whole-archive \
   -ldl \
   $(EXTRA_LIBS_DPDK)
-
 
 ##############################################################################
 

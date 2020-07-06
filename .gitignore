@@ -30,5 +30,7 @@ doc/_build
 .dockerwrap
 Makefile.local
 
+*.Td
+
 \#*\#
 *~

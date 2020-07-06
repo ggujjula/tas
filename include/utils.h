@@ -88,9 +88,9 @@ static inline uint64_t util_rdtsc(void)
     return ((uint64_t) edx << 32) | eax;
 #elif defined(__aarch64__)
     uint64_t rx;
-	//TODO: Find out if read ordering is important,
-	//add an isb if needed
-    asm volatile ("MRS %0, CNTPCT_EL0" : "=r" (rx));
+    //TODO: Find out if read ordering is important,
+    //add an isb if needed
+    asm volatile ("MRS %0, CNTVCT_EL0" : "=r" (rx));
     return rx;
 #endif
 }
