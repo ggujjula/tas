@@ -233,7 +233,6 @@ static int fastpath_poll(struct flextcp_context *ctx, int num,
 static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
     uint16_t q, uint8_t *ts)
 {
-#ifdef __amd64__    
   struct flextcp_pl_arx *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7;
 
   p0 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
@@ -252,7 +251,7 @@ static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
   p7 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
-
+#ifdef __amd64__
   asm volatile(
       "prefetcht0 32(%0);"
       "prefetcht0 32(%1);"
@@ -284,16 +283,44 @@ static inline void fetch_8ts(struct flextcp_context *ctx, uint32_t *heads,
         "r" (p4), "r" (p5), "r" (p6), "r" (p7), "r" (ts)
       : "memory");
 #elif defined(__aarch64__)
-  // IMPLEMENT STUB
+  util_prefetch0((unsigned char *)p0 + 32);
+  util_prefetch0((unsigned char *)p1 + 32);
+  util_prefetch0((unsigned char *)p2 + 32);
+  util_prefetch0((unsigned char *)p3 + 32);
+  util_prefetch0((unsigned char *)p4 + 32);
+  util_prefetch0((unsigned char *)p5 + 32);
+  util_prefetch0((unsigned char *)p6 + 32);
+  util_prefetch0((unsigned char *)p7 + 32);
+  asm volatile (
+    "dmb ish;"
+    "ldrb %w0, [%0, 31];"
+    "ldrb %w1, [%1, 31];"
+    "ldrb %w2, [%2, 31];"
+    "ldrb %w3, [%3, 31];"
+    "ldrb %w4, [%4, 31];"
+    "ldrb %w5, [%5, 31];"
+    "ldrb %w6, [%6, 31];"
+    "ldrb %w7, [%7, 31];"
+
+    "strb %w0, [%8, 0];"
+    "strb %w1, [%8, 1];"
+    "strb %w2, [%8, 2];"
+    "strb %w3, [%8, 3];"
+    "strb %w4, [%8, 4];"
+    "strb %w5, [%8, 5];"
+    "strb %w6, [%8, 6];"
+    "strb %w7, [%8, 7];"
+    :
+    : "r" (p0), "r" (p1), "r" (p2), "r" (p3),
+      "r" (p4), "r" (p5), "r" (p6), "r" (p7), "r" (ts)
+    : "memory");
 #endif
 }
 
 static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
     uint16_t q, uint8_t *ts)
 {
-#ifdef __amd64__    
   struct flextcp_pl_arx *p0, *p1, *p2, *p3;
-
   p0 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
   p1 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
@@ -302,7 +329,7 @@ static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
   p3 = (struct flextcp_pl_arx *) (ctx->queues[q].rxq_base + heads[q]);
   q = (q + 1 < ctx->num_queues ? q + 1 : 0);
-
+#ifdef __amd64__    
   asm volatile(
       "prefetcht0 32(%0);"
       "prefetcht0 32(%1);"
@@ -321,6 +348,25 @@ static inline void fetch_4ts(struct flextcp_context *ctx, uint32_t *heads,
       : "memory");
 #elif defined(__aarch64__)
   // IMPLEMENT STUB
+  util_prefetch0((unsigned char *)p0 + 32);
+  util_prefetch0((unsigned char *)p1 + 32);
+  util_prefetch0((unsigned char *)p2 + 32);
+  util_prefetch0((unsigned char *)p3 + 32);
+  asm volatile (
+    "dmb ish;"
+    "ldrb %w0, [%0, 31];"
+    "ldrb %w1, [%1, 31];"
+    "ldrb %w2, [%2, 31];"
+    "ldrb %w3, [%3, 31];"
+
+    "strb %w0, [%4, 0];"
+    "strb %w1, [%4, 1];"
+    "strb %w2, [%4, 2];"
+    "strb %w3, [%4, 3];"
+    :
+    : "r" (p0), "r" (p1), "r" (p2), "r" (p3),
+      "r" (ts)
+    : "memory");
 #endif
 }
 

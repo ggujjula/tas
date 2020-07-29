@@ -209,6 +209,8 @@ static void dataplane_block(struct dataplane_context *ctx, uint32_t ts)
     abort();
   }
 
+  printf("Fastpath got an event\n");
+
   for(i = 0; i < ret; i++) {
     if(event[i].fd == ctx->evfd) {
       ret = read(ctx->evfd, &val, sizeof(uint64_t));
@@ -409,6 +411,8 @@ static unsigned poll_kernel(struct dataplane_context *ctx, uint32_t ts)
 
 static unsigned poll_qman(struct dataplane_context *ctx, uint32_t ts)
 {
+  //TODO: Consider change to uint32_t type to avoid size changes between
+  //target machines
   unsigned q_ids[BATCH_SIZE];
   uint16_t q_bytes[BATCH_SIZE];
   struct network_buf_handle **handles;
@@ -549,10 +553,10 @@ static inline void tx_flush(struct dataplane_context *ctx)
   if (ctx->tx_num == 0) {
     return;
   }
-
+  printf("Right now there are %d handles to send\n", ctx->tx_num);
   /* try to send out packets */
   ret = network_send(&ctx->net, ctx->tx_num, ctx->tx_handles);
-
+  printf("Sent %d packets\n", ret);
   if (ret == ctx->tx_num) {
     /* everything sent */
     ctx->tx_num = 0;

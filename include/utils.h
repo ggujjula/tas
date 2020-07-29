@@ -35,7 +35,7 @@
 #define MEM_BARRIER() __asm__ volatile("" ::: "memory")
 #elif defined(__aarch64__)
 // IMPLEMENT STUB
-#define MEM_BARRIER()
+#define MEM_BARRIER() __asm__ volatile("dmb sy" ::: "memory")
 #endif
 
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
