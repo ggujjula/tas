@@ -1,0 +1,68 @@
+root@bf_ubuntu_18_04:~/tas# ./tas/tas --ip-addr=10.0.0.170/8 --fp-cores-max=1
+EAL: Detected 16 lcore(s)
+EAL: Detected 1 NUMA nodes
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'PA'
+EAL: No available hugepages reported in hugepages-16777216kB
+EAL: No available hugepages reported in hugepages-524288kB
+EAL: Probing VFIO support...
+EAL: VFIO support initialized
+EAL: PCI device 0000:03:00.0 on NUMA socket -1
+EAL:   Invalid NUMA socket, default to 0
+EAL:   probe driver: 15b3:a2d2 net_mlx5
+EAL: PCI device 0000:03:00.1 on NUMA socket -1
+EAL:   Invalid NUMA socket, default to 0
+EAL:   probe driver: 15b3:a2d2 net_mlx5
+net_mlx5: no Verbs device matches PCI device 0000:03:00.1, are kernel drivers loaded?
+EAL: Requested device 0000:03:00.1 cannot be used
+host ip: a0000aa MAC: 548f1e9f59b8
+TAS ready
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =197681  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1578200  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1577950  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1577972  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+Fastpath got an event
+net_mlx5: port 0 unable to disable interrupt on Rx queue 0
+flexnic_loadmon: status cores = 1   busy = 1575  cycles =1571463  kdrops=0
+Right now there are 1 handles to send
+Sent 1 packets
+Right now there are 1 handles to send
+Sent 1 packets
+Right now there are 1 handles to send
+Sent 1 packets
+Right now there are 1 handles to send
+Sent 1 packets
+Fastpath got an event
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560384  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560286  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560326  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560403  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560311  kdrops=0
+Fastpath got an event
+Right now there are 1 handles to send
+Sent 1 packets
+Fastpath got an event
+net_mlx5: port 0 unable to disable interrupt on Rx queue 0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560379  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560399  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560235  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560380  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+Fastpath got an event
+net_mlx5: port 0 unable to disable interrupt on Rx queue 0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =1560444  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0

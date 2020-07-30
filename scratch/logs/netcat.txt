@@ -1,0 +1,20 @@
+[gautham@bull2-fedora27 ~]$ nc -l 10.0.0.2 41873 -vvv
+Ncat: Version 7.60 ( https://nmap.org/ncat )
+Ncat: Generating a temporary 1024-bit RSA key. Use --ssl-key and --ssl-cert to use a permanent one.
+Ncat: SHA-1 fingerprint: 6A06 2ECC 0E9A 6BFA 82B3 3BD0 010D 2956 599A 0390
+NCAT DEBUG: Initialized fdlist with 102 maxfds
+Ncat: Listening on 10.0.0.2:41873
+NCAT DEBUG: Added fd 3 to list, nfds 1, maxfd 3
+NCAT DEBUG: Added fd 0 to list, nfds 2, maxfd 3
+NCAT DEBUG: Initialized fdlist with 100 maxfds
+NCAT DEBUG: selecting, fdmax 3
+NCAT DEBUG: select returned 1 fds ready
+NCAT DEBUG: fd 3 is ready
+Ncat: Connection from 10.0.0.170.
+NCAT DEBUG: Swapping fd[0] (3) with fd[1] (0)
+NCAT DEBUG: Removed fd 3 from list, nfds 1, maxfd 0
+Ncat: Connection from 10.0.0.170:5454.
+NCAT DEBUG: Added fd 4 to list, nfds 2, maxfd 4
+NCAT DEBUG: Added fd 4 to list, nfds 1, maxfd 4
+NCAT DEBUG: selecting, fdmax 4
+

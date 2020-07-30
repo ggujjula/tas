@@ -1,0 +1,7 @@
+root@bf_ubuntu_18_04:~# ./tas_test/tas_test
+flextcp initialized
+Created context
+Requested conn open
+Polled for conn open
+Alloced space at 0x400003682000 for test tx
+Sent test tx data across 0xffffd9a7f998

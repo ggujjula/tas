@@ -1,0 +1,6 @@
+[root@bull2-fedora27 ~]# tshark -i enp216s0f0 -f tcp
+Running as user "root" and group "root". This could be dangerous.
+Capturing on 'enp216s0f0'
+    1 0.000000000   10.0.0.170 → 10.0.0.2     TCP 70 5454 → 41873 [SYN, ECN, CWR] Seq=0 Win=11680 Len=0 MSS=1460 TSval=2873833121 TSecr=0
+    2 0.000034164     10.0.0.2 → 10.0.0.170   TCP 70 41873 → 5454 [SYN, ACK, ECN] Seq=0 Ack=1 Win=28960 Len=0 MSS=1460 TSval=4034602712 TSecr=2873833121
+    3 0.000112504   10.0.0.170 → 10.0.0.2     TCP 66 5454 → 41873 [ACK] Seq=1 Ack=1 Win=11680 Len=0 TSval=2873833309 TSecr=4034602712

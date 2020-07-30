@@ -70,8 +70,8 @@ int main(void){
   while(flextcp_context_poll(&my_context, 1, &my_event) != 1);
   printf("Got an event\n");
 
-  //while(1);
-  sleep(10);
+  while(1);
+  //sleep(10);
 
   err = flextcp_connection_close(&my_context, &my_conn);
   if(err < 0){
