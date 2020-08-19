@@ -1,0 +1,98 @@
+lib/tas/init.c:131
+lib/tas/init.c:162
+lib/tas/init.c:935 
+lib/tas/init.c:966
+Add:
+lib/tas/init.c:922*
+  Before the while loop. Not sure why a barrier exists at the end of this loop,
+(at 935)but my guess would be to make sure the "type" flags are fetched in order.
+
+lib/tas/conn.c:75:
+lib/tas/conn.c:110:
+lib/tas/conn.c:146:
+lib/tas/conn.c:210:
+lib/tas/conn.c:416:
+May need to add (not sure):
+lib/tas/conn.c:66,103,137,198,409:
+  I don't think we need to add a barrier here since the if statement has the
+potential to exit, which the compiler and processor will see as a dependency.
+Even if the later writes are executed out-of-order, the CPU will roll them back
+if the early return executes. Nonetheless, it may be a good idea to include them
+for now to remove the possiblity consistency errors while debugging.
+No need to add:
+lib/tas/conn.c:454
+  This flag is does not need to be preceeded by a barrier since it is observed in
+lib/tas/init.c::conns_bump(), which runs in the same process.
+
+lib/tas/kernel.c:273:
+May need to add (not sure):
+lib/tas/kernel.c:271:
+  Same reason as in lib/tas/conn.c.
+
+lib/sockets/manage_fd.c:179:
+  Not using sockets library anyways, not really important to us.
+
+lib/sockets/libc.c:149:
+lib/sockets/libc.c:155:
+  These two barrier are used to sequentially signal the finish of the socket
+library init.
+
+lib/sockets/interpose.c:747:
+lib/sockets/interpose.c:753:
+  Same as lib/sockets/libc.c.
+
+tas/slow/appif_ctx.c:89:
+tas/slow/appif_ctx.c:119:
+tas/slow/appif_ctx.c:161:
+tas/slow/appif_ctx.c:210:
+tas/slow/appif_ctx.c:240:
+tas/slow/appif_ctx.c:283:
+tas/slow/appif_ctx.c:325:
+tas/slow/appif_ctx.c:374:
+tas/slow/appif_ctx.c:382:
+tas/slow/appif_ctx.c:418:
+tas/slow/appif_ctx.c:443:
+tas/slow/appif_ctx.c:452:
+tas/slow/appif_ctx.c:484:
+May need to add (not sure):
+tas/slow/appif_ctx.c:70,115,157,187
+  Same reason as in lib/tas/conn.c.
+
+tas/slow/appif.c:552:
+tas/slow/appif.c:574:
+
+tas/slow/nicif.c:158:
+tas/slow/nicif.c:166:
+tas/slow/nicif.c:168:
+tas/slow/nicif.c:240:
+tas/slow/nicif.c:242:
+tas/slow/nicif.c:343:
+tas/slow/nicif.c:373:
+tas/slow/nicif.c:479:
+tas/slow/nicif.c:599:
+tas/slow/nicif.c:673:
+tas/slow/nicif.c:677:
+tas/slow/nicif.c:681:
+tas/slow/nicif.c:702:
+
+tas/fast/trace.c:128:
+
+tas/fast/fast_flows.c:1119:
+tas/fast/fast_flows.c:1142:
+tas/fast/fast_flows.c:1150:
+
+tas/fast/fast_appctx.c:54:
+tas/fast/fast_appctx.c:97:
+tas/fast/fast_appctx.c:123:
+tas/fast/fast_appctx.c:166:
+Add:
+tas/fast/fast_appctx.c:153:
+  Same reason as lib/tas/init.c:922.
+
+tas/fast/fast_kernel.c:88:
+tas/fast/fast_kernel.c:133:
+Add:
+tas/fast/fast_kernel.c:54:
+  Avoid speculative fetching or out-of-order reads. Requires some refactoring.
+tas/fast/fast_kernel.c:109,117:
+  Avoid speculative fetching or out-of-order reads.
