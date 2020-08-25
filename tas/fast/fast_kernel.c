@@ -43,6 +43,7 @@ int fast_kernel_poll(struct dataplane_context *ctx,
   struct flextcp_pl_appctx *kctx = &fp_state->kctx[ctx->id];
   struct flextcp_pl_ktx *ktx;
   uint32_t flow_id, len;
+  uint8_t type;
   int ret = -1;
 
   /* stop if context is not in use */
@@ -50,10 +51,12 @@ int fast_kernel_poll(struct dataplane_context *ctx,
     return -1;
 
   ktx = dma_pointer(kctx->tx_base + kctx->tx_head, sizeof(*ktx));
+  MEM_BARRIER();
+  type = ktx->type;
 
-  if (ktx->type == 0) {
+  if (type == 0) {
     return -1;
-  } else if (ktx->type == FLEXTCP_PL_KTX_PACKET) {
+  } else if (type == FLEXTCP_PL_KTX_PACKET) {
     len = ktx->msg.packet.len;
 
     /* Read transmit queue entry */
@@ -62,7 +65,7 @@ int fast_kernel_poll(struct dataplane_context *ctx,
     ret = 0;
     inject_tcp_ts(buf, len, ts, nbh);
     tx_send(ctx, nbh, 0, len);
-  } else if (ktx->type == FLEXTCP_PL_KTX_PACKET_NOTS) {
+  } else if (type == FLEXTCP_PL_KTX_PACKET_NOTS) {
     /* send packet without filling in timestamp */
     len = ktx->msg.packet.len;
 
@@ -71,7 +74,7 @@ int fast_kernel_poll(struct dataplane_context *ctx,
 
     ret = 0;
     tx_send(ctx, nbh, 0, len);
-  } else if (ktx->type == FLEXTCP_PL_KTX_CONNRETRAN) {
+  } else if (type == FLEXTCP_PL_KTX_CONNRETRAN) {
     flow_id = ktx->msg.connretran.flow_id;
     if (flow_id >= FLEXNIC_PL_FLOWST_NUM) {
       fprintf(stderr, "fast_kernel_qman: invalid flow id=%u\n", flow_id);
@@ -103,6 +106,7 @@ void fast_kernel_packet(struct dataplane_context *ctx,
   uint16_t len;
 
   /* queue not initialized yet */
+  MEM_BARRIER();
   if (kctx->rx_len == 0) {
     return;
   }
@@ -110,6 +114,7 @@ void fast_kernel_packet(struct dataplane_context *ctx,
   krx = dma_pointer(kctx->rx_base + kctx->rx_head, sizeof(*krx));
 
   /* queue full */
+  MEM_BARRIER();
   if (krx->type != 0) {
     ctx->kernel_drop++;
     return;

@@ -920,6 +920,7 @@ static void txq_probe(struct flextcp_context *ctx, unsigned n)
     if (pos >= len)
       pos -= len;
 
+    MEM_BARRIER();
     i = 0;
     while (avail < len && i < 2 * n) {
       atx = (struct flextcp_pl_atx *) (ctx->queues[q].txq_base + pos);

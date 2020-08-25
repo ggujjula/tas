@@ -150,6 +150,7 @@ int fast_actx_rxq_probe(struct dataplane_context *ctx, uint32_t id)
     pos -= actx->rx_len;
 
   i = 0;
+  MEM_BARRIER();
   while (actx->rx_avail < actx->rx_len && i < 2 * BATCH_SIZE) {
     parx = dma_pointer(actx->rx_base + pos, sizeof(*parx));
 
